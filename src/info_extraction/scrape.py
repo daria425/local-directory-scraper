@@ -10,18 +10,18 @@ url='https://findyour.islington.gov.uk/kb5/islington/directory/results.action?co
 service=Service(driver_path)
 chrome_options=Options()
 chrome_options.add_argument("--headless=new")
+
 driver=webdriver.Chrome(options=chrome_options, service=service)
 
-def scrape(url, save_output=False):
+def scrape(url, selenium_driver, save_output=False):
     time.sleep(2)
-    driver.get(url)
-    content=driver.page_source
-    content_title=driver.find_element(By.XPATH, "//*[@id=\"content\"]/div/h1")
-    print(content_title.text)
-    driver.quit()
+    selenium_driver.get(url)
+    content=selenium_driver.page_source
+    content_title=selenium_driver.find_element(By.XPATH, "//*[@id=\"content\"]/div/h1")
+    content_title=content_title.text
     if save_output:
         with open('output.html', 'w', encoding='utf-8') as file:
             file.write(content)
-    return content
+    return content, content_title
 
 

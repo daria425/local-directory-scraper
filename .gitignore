@@ -1,2 +1,4 @@
 scraping-reqs.*
 output.html
+data/
+__pycache__

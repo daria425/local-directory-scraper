@@ -76,16 +76,15 @@ def extract_info(html_content):
 def create_df(html_object):
     results=extract_info(html_object)
     df=pd.DataFrame.from_dict(results)
-    df=df.set_index("name")
     df["description"]=df["description"].str.strip()
     return df
 
     
    
+html=read_html_from_file(file_path)
+df=create_df(html)
+print(df.columns)
 
-# html=read_html_from_file(file_path)
-# last_page=get_last_page(html)
-# print(last_page)
     
 
     
