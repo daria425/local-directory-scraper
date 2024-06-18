@@ -9,6 +9,13 @@ def read_html_from_file(file_path):
         html_content = file.read()
     return html_content
 
+def filter_contact_info(contact_list):
+    def is_valid_contact(item):
+        # Check if the item is a number or contains "Fax"
+        return bool(re.match(r'^[\d\s\+\-\(\)]+$', item))
+    
+    # Filter the list using the is_valid_contact function
+    return [item for item in contact_list if is_valid_contact(item)]
 
 def get_id(url):
     parsed_url=urlparse(url)
@@ -32,7 +39,7 @@ def get_last_page(html_content):
     
 
 
-def extract_info(html_content):
+def extract_info_islington(html_content):
     soup_object=BeautifulSoup(html_content, "html.parser")
     result_nav=soup_object.find("nav", attrs={"aria-label":"Results pagination"})
     print(result_nav)
@@ -73,18 +80,80 @@ def extract_info(html_content):
         results.append(result)
     return results
 
-def create_df(html_object):
-    results=extract_info(html_object)
+def create_df(html_object, location):
+    if location.lower()=="islington":
+        results=extract_info_islington(html_object)
     df=pd.DataFrame.from_dict(results)
     df["description"]=df["description"].str.strip()
     return df
 
     
-   
-html=read_html_from_file(file_path)
-df=create_df(html)
-print(df.columns)
 
+
+def extract_info_camden(html_content):
+    soup = BeautifulSoup(html_content, "html.parser")
+    result_list = soup.find_all("div", class_="result_hit")
+    results = []
+
+    for result in result_list:
+        prefix = "https://cindex.camden.gov.uk/kb5/camden/cd/"
+        org_link_item = result.find("header").find("h3")
+        org_name, org_link = org_link_item.text, org_link_item.find("a")['href']
+        org_id = get_id(org_link)
+        
+        org_address = result.find("div", class_="address_lines")
+        org_adress_lines = [span.text for span in org_address.find_all("span")]
+        org_postcode = org_adress_lines[-1]
+        org_adress_lines = ','.join(org_adress_lines)
+        
+        org_description = result.find("div", class_="hit-body")
+        org_description_text = ''
+        for child in org_description.children:
+            if child.name is None:
+                org_description_text += str(child).strip()
+        
+        telephone_nums = result.find("div", class_="hit-telephone")
+        telephone_num_lines = [span.text for span in telephone_nums.find_all("span")]
+        telephone_num_lines = filter_contact_info(telephone_num_lines)
+        telephone_num_lines = ','.join(telephone_num_lines)
+        
+        links = result.find("footer").find_all("a")
+        org_email = ''
+        org_website = ''
+        for link in links:
+            if link.find("i", class_="fa fa-envelope"):
+                org_email = link["href"]
+                org_email=org_email.replace("mailto:", "")
+            elif link.find("i", class_="fa fa-external-link"):
+                org_website = link["href"]
+        
+        result = {
+            "id": org_id,
+            "name": org_name,
+            "description": org_description_text,
+            "organization_link": prefix + org_link,
+            "address": org_adress_lines,
+            "postcode": org_postcode,
+            "organization_website": org_website,
+            "telephone": telephone_num_lines,
+            "email": org_email
+        }
+        results.append(result)
+    
+    return results
+
+html_content=read_html_from_file(file_path)
+results=extract_info_camden(html_content)
+print(results[0])
+
+
+    
+
+
+
+
+    
+    
     
 
     

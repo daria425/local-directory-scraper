@@ -9,10 +9,10 @@ selenium_driver=driver
 
 
 
-def get_islington_data(url):
-    html, page_title=scrape(url, selenium_driver)
+def get_islington_data(url,):
+    html, page_title=scrape(url, "//*[@id=\"content\"]/div/h1",selenium_driver, )
     last_page=get_last_page(html)
-    first_page_df=create_df(html)
+    first_page_df=create_df(html, "islington")
     dataframes.append(first_page_df)
 
     if last_page is not None:
@@ -20,10 +20,10 @@ def get_islington_data(url):
         for i in range(50, int(last_page)+inc, inc):
             url_to_scrape=f"{url}&sr={i}"
             html=scrape(url_to_scrape, selenium_driver)[0]
-            df=create_df(html)
+            df=create_df(html, "islington")
             dataframes.append(df)
 
     selenium_driver.quit()
     combined_dfs=pd.concat(dataframes, axis=0, ignore_index=True)
-    csv=combined_dfs.to_csv(f'{page_title}.csv')
+    combined_dfs.to_csv(f'{page_title}.csv')
 
