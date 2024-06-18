@@ -24,4 +24,4 @@ def scrape(url, save_output=False):
             file.write(content)
     return content
 
-page_content=scrape(url)
+
