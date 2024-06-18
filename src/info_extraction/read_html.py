@@ -17,24 +17,37 @@ def filter_contact_info(contact_list):
     # Filter the list using the is_valid_contact function
     return [item for item in contact_list if is_valid_contact(item)]
 
-def get_id(url):
+def get_query_str(url, query_str):
     parsed_url=urlparse(url)
     query_params = parse_qs(parsed_url.query)
-    id_value = query_params.get('id', [None])[0]
+    id_value = query_params.get(query_str, [None])[0]
     return id_value
 
-def get_last_page(html_content):
-    soup_object=BeautifulSoup(html_content, "html.parser")
-    try:
-        result_nav=soup_object.find("nav", attrs={"aria-label":"Results pagination"})
-        last_page_btn=result_nav.find_all("a",string=re.compile(r'\b.*last.*\b', re.IGNORECASE) )
-        if (last_page_btn):
-            last_page_query_str=last_page_btn[0]["data-sr"]
-        else:
-            last_page_query_str=None
-        return last_page_query_str
-    except Exception as e:
-        print(e)
+def get_last_page(html_content, location):
+    soup_object = BeautifulSoup(html_content, "html.parser")
+    if location.lower() == "islington":
+        try:
+            result_nav = soup_object.find("nav", attrs={"aria-label": "Results pagination"})
+            last_page_btn = result_nav.find_all("a", string=re.compile(r'\b.*last.*\b', re.IGNORECASE))
+            if last_page_btn:
+                last_page_query_str = last_page_btn[0]["data-sr"]
+            else:
+                last_page_query_str = None
+            return last_page_query_str
+        except Exception as e:
+            print(e)
+            return None
+    elif location.lower()=="camden":
+        try:
+            pagination_container=soup_object.find("ul", class_="pagination")
+            last_page_link=pagination_container.find("a", class_="last-page")
+            print(last_page_link)
+            last_page=get_query_str(last_page_link["href"], 'sr')
+            return last_page
+        except Exception as e:
+            print(e)
+            return None
+
 
     
 
@@ -50,7 +63,7 @@ def extract_info_islington(html_content):
         organization_link_item=organization.find("a")
         prefix="https://findyour.islington.gov.uk/kb5/islington/directory/"
         org_link, org_name=organization_link_item['href'], organization_link_item.text
-        org_id=get_id(org_link)
+        org_id=get_query_str(org_link, 'id')
         org_description_item=organization.find("div", class_="mb-3 w-100")
         org_description=org_description_item.text
         link_btns=organization.find_all("a", class_="btn btn-outline-dark mb-3 mr-3")
@@ -83,6 +96,8 @@ def extract_info_islington(html_content):
 def create_df(html_object, location):
     if location.lower()=="islington":
         results=extract_info_islington(html_object)
+    elif location.lower()=="camden":
+        results=extract_info_camden(html_object)
     df=pd.DataFrame.from_dict(results)
     df["description"]=df["description"].str.strip()
     return df
@@ -99,11 +114,14 @@ def extract_info_camden(html_content):
         prefix = "https://cindex.camden.gov.uk/kb5/camden/cd/"
         org_link_item = result.find("header").find("h3")
         org_name, org_link = org_link_item.text, org_link_item.find("a")['href']
-        org_id = get_id(org_link)
+        org_id = get_query_str(org_link,'id')
         
         org_address = result.find("div", class_="address_lines")
-        org_adress_lines = [span.text for span in org_address.find_all("span")]
-        org_postcode = org_adress_lines[-1]
+        org_adress_lines = [span.text for span in org_address.find_all("span")] if org_address is not None else []
+        if org_adress_lines:
+            org_postcode = org_adress_lines[-1]
+        else:
+            org_postcode=''
         org_adress_lines = ','.join(org_adress_lines)
         
         org_description = result.find("div", class_="hit-body")
@@ -113,7 +131,7 @@ def extract_info_camden(html_content):
                 org_description_text += str(child).strip()
         
         telephone_nums = result.find("div", class_="hit-telephone")
-        telephone_num_lines = [span.text for span in telephone_nums.find_all("span")]
+        telephone_num_lines =  [span.text for span in telephone_nums.find_all("span")] if telephone_nums is not None else []
         telephone_num_lines = filter_contact_info(telephone_num_lines)
         telephone_num_lines = ','.join(telephone_num_lines)
         
@@ -142,9 +160,7 @@ def extract_info_camden(html_content):
     
     return results
 
-html_content=read_html_from_file(file_path)
-results=extract_info_camden(html_content)
-print(results[0])
+
 
 
     
