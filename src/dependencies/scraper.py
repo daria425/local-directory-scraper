@@ -42,7 +42,7 @@ class Scraper:
     
     def get_category_page(self,region):
         category_page_url=self.get_category_directory_url(region)
-        html=self.scrape(category_page_url)
+        html=self.scrape(category_page_url)[0]
         return html
     
     def __enter__(self):

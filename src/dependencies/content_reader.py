@@ -3,6 +3,7 @@ import re
 from urllib.parse import urlparse, parse_qs
 import pandas as pd
 from bs4 import BeautifulSoup
+import json
 
 class ContentReaderBase(ABC):
     def __init__(self, html_content):
@@ -117,11 +118,10 @@ class CamdenContentReader(ContentReaderBase):
             results.append(result)
         
         return results
-    def get_main_categories(self):
-        html=ContentReaderBase.read_html_from_file("./output.html")
-        soup=BeautifulSoup(html, "html.parser")
-        category_container=soup.find("div", id="category-blocks")
-        category_block_items=category_container.find_all("div", class_="sub-cat")
+    def get_main_categories(self, as_json=False):
+        category_container=self.soup_object.find("div", id="category-blocks")
+        print(category_container)
+        category_block_items=category_container.find_all("div", class_="sub_cat")
         categories=[]
         for block in category_block_items:
             link=block.find("a")
@@ -133,6 +133,7 @@ class CamdenContentReader(ContentReaderBase):
                 "category_name":category_name, "category_description":category_description, "category_link": category_link
             }
             categories.append(result)
+        print(categories)
         return categories
     
 class IslingtonContentReader(ContentReaderBase):
@@ -190,7 +191,7 @@ class IslingtonContentReader(ContentReaderBase):
             results.append(result)
         return results
     
-    def get_main_categories(self):
+    def get_main_categories(self, as_json=False):
         category_section=self.soup_object.find("section", class_="category-blocks")
         category_block_items=category_section.find_all("div", class_="category-block")
         categories=[]
@@ -203,7 +204,10 @@ class IslingtonContentReader(ContentReaderBase):
             result={"category_name": category_name.strip(), "category_description": category_description, "category_link": category_link
             }
             categories.append(result)
-        return categories
+        if as_json:
+            return json.dumps(categories)
+        else:
+            return categories
     
 
             
