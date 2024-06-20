@@ -17,22 +17,23 @@ def make_category_csv(url, website_location):
                 for i in range(50, inc+int(last_page), inc):
                     new_url=f"{url}&sr={i}"
                     html=scraper.scrape(new_url)[0]
-                    df=CamdenContentReader(html).create_df
+                    df=CamdenContentReader(html).create_df()
                     dataframes.append(df)
         elif website_location.lower()=="islington":
             islington_reader=IslingtonContentReader(html)
             last_page=islington_reader.get_last_page()
-            first_page_df=camden_reader.create_df()
+            print(last_page)
+            first_page_df=islington_reader.create_df()
             dataframes.append(first_page_df)
             if last_page is not None:
                 inc=10
                 for i in range(10, int(last_page)+inc,inc):
                     new_url=f'{url}&sr={i}&nh=10'
                     html=scraper.scrape(new_url)[0]
-                    df=IslingtonContentReader.create_df(html)
+                    df=IslingtonContentReader(html).create_df()
                     dataframes.append(df)
     combined_dfs=pd.concat(dataframes, axis=0, ignore_index=True)
-    combined_dfs.to_csv(f'{content_title}.csv')
+    combined_dfs.to_csv(f'test--{content_title}.csv')
 
         
         
