@@ -1,7 +1,22 @@
-from dependencies.make_csv import make_category_csv
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from .routes import search
+app = FastAPI()
 
-url="https://findyour.islington.gov.uk/kb5/islington/directory/results.action?communitychannelnew=1"
+# origins=[
+#     "http://localhost:5173"
+# ]
 
-make_category_csv(url, "islington")
+# app.add_middleware(    
+#         CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],)
+
+@app.get("/")
+def main():
+    return {"message": "Hello World"}
 
 
+app.include_router(search.router)

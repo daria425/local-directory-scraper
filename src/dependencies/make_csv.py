@@ -13,8 +13,8 @@ def make_category_csv(url, website_location):
             first_page_df=camden_reader.create_df()
             dataframes.append(first_page_df)
             if last_page is not None:
-                inc=50
-                for i in range(50, inc+int(last_page), inc):
+                inc=10
+                for i in range(10, inc+int(last_page), inc):
                     new_url=f"{url}&sr={i}"
                     html=scraper.scrape(new_url)[0]
                     df=CamdenContentReader(html).create_df()
@@ -26,8 +26,8 @@ def make_category_csv(url, website_location):
             first_page_df=islington_reader.create_df()
             dataframes.append(first_page_df)
             if last_page is not None:
-                inc=10
-                for i in range(10, int(last_page)+inc,inc):
+                inc=50
+                for i in range(500, int(last_page)+inc,inc):
                     new_url=f'{url}&sr={i}&nh=10'
                     html=scraper.scrape(new_url)[0]
                     df=IslingtonContentReader(html).create_df()

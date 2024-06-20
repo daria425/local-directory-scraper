@@ -30,6 +30,10 @@ class ContentReaderBase(ABC):
         query_params = parse_qs(parsed_url.query)
         id_value = query_params.get(query_str, [None])[0]
         return id_value
+    
+    @abstractmethod
+    def get_main_categories(self):
+        pass
 
     @abstractmethod
     def get_last_page(self):
@@ -49,6 +53,7 @@ class ContentReaderBase(ABC):
 class CamdenContentReader(ContentReaderBase):
     def __init__(self, html_content):
         super().__init__(html_content)
+        self.prefix="https://cindex.camden.gov.uk/kb5/camden/cd/"
 
     def get_last_page(self):
         try:
@@ -65,7 +70,6 @@ class CamdenContentReader(ContentReaderBase):
         result_list = self.soup_object.find_all("div", class_="result_hit")
         results = []
         for result in result_list:
-            prefix = "https://cindex.camden.gov.uk/kb5/camden/cd/"
             org_link_item = result.find("header").find("h3")
             org_name, org_link = org_link_item.text, org_link_item.find("a")['href']
             org_id = self.get_query_str(org_link, 'id')
@@ -103,7 +107,7 @@ class CamdenContentReader(ContentReaderBase):
                 "id": org_id,
                 "name": org_name,
                 "description": org_description_text,
-                "organization_link": prefix + org_link,
+                "organization_link": self.prefix + org_link,
                 "address": org_adress_lines,
                 "postcode": org_postcode,
                 "organization_website": org_website,
@@ -113,10 +117,28 @@ class CamdenContentReader(ContentReaderBase):
             results.append(result)
         
         return results
+    def get_main_categories(self):
+        html=ContentReaderBase.read_html_from_file("./output.html")
+        soup=BeautifulSoup(html, "html.parser")
+        category_container=soup.find("div", id="category-blocks")
+        category_block_items=category_container.find_all("div", class_="sub-cat")
+        categories=[]
+        for block in category_block_items:
+            link=block.find("a")
+            rel_link=link["href"]
+            category_description=link["data-content"]
+            category_name=link["data-original-title"]
+            category_link=self.prefix + rel_link
+            result={
+                "category_name":category_name, "category_description":category_description, "category_link": category_link
+            }
+            categories.append(result)
+        return categories
     
 class IslingtonContentReader(ContentReaderBase):
     def __init__(self, html_content):
         super().__init__(html_content)
+        self.prefix="https://findyour.islington.gov.uk/kb5/islington/directory/"
 
     def get_last_page(self):
         try:
@@ -137,7 +159,6 @@ class IslingtonContentReader(ContentReaderBase):
         results=[]
         for organization in organization_list:
             organization_link_item=organization.find("a")
-            prefix="https://findyour.islington.gov.uk/kb5/islington/directory/"
             org_link, org_name=organization_link_item['href'], organization_link_item.text
             org_id=self.get_query_str(org_link, 'id')
             org_description_item=organization.find("div", class_="mb-3 w-100")
@@ -162,9 +183,29 @@ class IslingtonContentReader(ContentReaderBase):
                 "id":org_id,
                 "name": org_name, 
                 "description": org_description, 
-                "organization_link": prefix+org_link, 
+                "organization_link": self.prefix+org_link, 
                 "postcode": org_postcode, 
                 "organization_website":org_website
             }
             results.append(result)
         return results
+    
+    def get_main_categories(self):
+        category_section=self.soup_object.find("section", class_="category-blocks")
+        category_block_items=category_section.find_all("div", class_="category-block")
+        categories=[]
+        for block in category_block_items:
+            link=block.find("a")
+            rel_link=link["href"]
+            category_description=""
+            category_name=link.find("h3").text
+            category_link=self.prefix + rel_link
+            result={"category_name": category_name.strip(), "category_description": category_description, "category_link": category_link
+            }
+            categories.append(result)
+        return categories
+    
+
+            
+
+

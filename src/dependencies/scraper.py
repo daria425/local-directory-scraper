@@ -9,7 +9,13 @@ class Scraper:
     def __init__(self):
         self.driver_path='/usr/local/bin/chromedriver'
         self.driver=None
-
+        self.prefixes={
+            "camden": "https://cindex.camden.gov.uk/kb5/camden/cd/", 
+            "islington": "https://findyour.islington.gov.uk/kb5/islington/directory/"
+        }
+    
+    def get_category_directory_url(self, region):
+        return self.prefixes[region]+"home.page"
 
     def create_driver(self):
         service=Service(self.driver_path)
@@ -33,6 +39,11 @@ class Scraper:
             with open('output.html', 'w', encoding='utf-8') as file:
              file.write(content)
         return content, content_title
+    
+    def get_category_page(self,region):
+        category_page_url=self.get_category_directory_url(region)
+        html=self.scrape(category_page_url)
+        return html
     
     def __enter__(self):
         self.create_driver()
