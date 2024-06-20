@@ -118,7 +118,7 @@ class CamdenContentReader(ContentReaderBase):
             results.append(result)
         
         return results
-    def get_main_categories(self, as_json=False):
+    def get_main_categories(self):
         category_container=self.soup_object.find("div", id="category-blocks")
         print(category_container)
         category_block_items=category_container.find_all("div", class_="sub_cat")
@@ -133,8 +133,22 @@ class CamdenContentReader(ContentReaderBase):
                 "category_name":category_name, "category_description":category_description, "category_link": category_link
             }
             categories.append(result)
-        print(categories)
+     
         return categories
+    
+    def get_subcategories(self):
+        category_list_container=self.soup_object.find("ul", class_="dropdown-menu")
+        category_list_items=category_list_container.find_all("a")
+        subcategories=[]
+        for item in category_list_items:
+                    rel_link=item["href"]
+                    subcategory_name=item.text
+                    result={
+                        "subcategory_link": self.prefix + rel_link, 
+                        "subcategory_name":subcategory_name
+                    }
+                    subcategories.append(result)
+        return subcategories
     
 class IslingtonContentReader(ContentReaderBase):
     def __init__(self, html_content):
@@ -191,7 +205,7 @@ class IslingtonContentReader(ContentReaderBase):
             results.append(result)
         return results
     
-    def get_main_categories(self, as_json=False):
+    def get_main_categories(self):
         category_section=self.soup_object.find("section", class_="category-blocks")
         category_block_items=category_section.find_all("div", class_="category-block")
         categories=[]
@@ -204,12 +218,25 @@ class IslingtonContentReader(ContentReaderBase):
             result={"category_name": category_name.strip(), "category_description": category_description, "category_link": category_link
             }
             categories.append(result)
-        if as_json:
-            return json.dumps(categories)
-        else:
-            return categories
+        return categories
+    
+    def get_subcategories(self):
+        category_list_container=self.soup_object.find("ul", class_="navbar-nav flex-wrap w-100")
+        category_list_items=category_list_container.find_all("a", class_="dropdown-item")
+        subcategories=[]
+        for item in category_list_items:
+            rel_link=item["href"]
+            subcategory_name=item.text
+            result={
+                "subcategory_link": self.prefix + rel_link, 
+                "subcategory_name":subcategory_name
+            }
+            subcategories.append(result)
+        return subcategories
+
     
 
-            
+
+
 
 
