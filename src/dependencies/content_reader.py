@@ -60,9 +60,11 @@ class CamdenContentReader(ContentReaderBase):
         try:
             pagination_container = self.soup_object.find("ul", class_="pagination")
             last_page_link = pagination_container.find("a", class_="last-page")
-            print(last_page_link)
-            last_page = self.get_query_str(last_page_link["href"], 'sr')
-            return last_page
+            if last_page_link:
+                last_page = self.get_query_str(last_page_link["href"], 'sr')
+                return last_page
+            else: 
+                return None
         except Exception as e:
             print(e)
             return None
@@ -141,7 +143,7 @@ class CamdenContentReader(ContentReaderBase):
         category_list_items=category_list_container.find_all("a")
         subcategories=[]
         for item in category_list_items:
-                    rel_link=item["href"]
+                    rel_link=item["href"].replace("/kb5/camden/cd/core/../", "")
                     subcategory_name=item["title"]
                     result={
                         "subcategory_link": self.prefix + rel_link, 

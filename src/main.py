@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import search
+from .routes import search, csv_file
 app = FastAPI()
 
 # origins=[
@@ -20,3 +20,4 @@ def main():
 
 
 app.include_router(search.router)
+app.include_router(csv_file.router)

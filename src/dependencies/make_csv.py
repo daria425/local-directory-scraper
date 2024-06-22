@@ -3,23 +3,24 @@ from .content_reader import CamdenContentReader, IslingtonContentReader
 from .scraper import Scraper
 import pandas as pd
 
-def make_category_csv(url, website_location):
+def make_category_csv(url, region):
     dataframes=[]
     with Scraper() as scraper:
         html, content_title=scraper.scrape(url)
-        if website_location.lower()=="camden":
+        if region.lower()=="camden":
             camden_reader=CamdenContentReader(html)
             last_page=camden_reader.get_last_page()
+            print(last_page)
             first_page_df=camden_reader.create_df()
             dataframes.append(first_page_df)
             if last_page is not None:
                 inc=10
                 for i in range(10, inc+int(last_page), inc):
-                    new_url=f"{url}&sr={i}"
+                    new_url=f"{url}&sr={i}&nh=10"
                     html=scraper.scrape(new_url)[0]
                     df=CamdenContentReader(html).create_df()
                     dataframes.append(df)
-        elif website_location.lower()=="islington":
+        elif region.lower()=="islington":
             islington_reader=IslingtonContentReader(html)
             last_page=islington_reader.get_last_page()
             print(last_page)
@@ -27,13 +28,15 @@ def make_category_csv(url, website_location):
             dataframes.append(first_page_df)
             if last_page is not None:
                 inc=50
-                for i in range(500, int(last_page)+inc,inc):
-                    new_url=f'{url}&sr={i}&nh=10'
+                for i in range(50, int(last_page)+inc,inc):
+                    new_url=f'{url}&sr={i}'
                     html=scraper.scrape(new_url)[0]
                     df=IslingtonContentReader(html).create_df()
+                    print("df made")
                     dataframes.append(df)
     combined_dfs=pd.concat(dataframes, axis=0, ignore_index=True)
-    combined_dfs.to_csv(f'test--{content_title}.csv')
+    print((f'csv with title {content_title}.csv will be made'))
+    return combined_dfs.to_json(orient="records")
 
         
         
