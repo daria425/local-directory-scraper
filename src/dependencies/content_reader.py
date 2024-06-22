@@ -137,12 +137,12 @@ class CamdenContentReader(ContentReaderBase):
         return categories
     
     def get_subcategories(self):
-        category_list_container=self.soup_object.find("ul", class_="dropdown-menu")
+        category_list_container=self.soup_object.find("ul", class_="2-cats")
         category_list_items=category_list_container.find_all("a")
         subcategories=[]
         for item in category_list_items:
                     rel_link=item["href"]
-                    subcategory_name=item.text
+                    subcategory_name=item["title"]
                     result={
                         "subcategory_link": self.prefix + rel_link, 
                         "subcategory_name":subcategory_name
@@ -221,11 +221,11 @@ class IslingtonContentReader(ContentReaderBase):
         return categories
     
     def get_subcategories(self):
-        category_list_container=self.soup_object.find("ul", class_="navbar-nav flex-wrap w-100")
-        category_list_items=category_list_container.find_all("a", class_="dropdown-item")
+        category_list_container=self.soup_object.find("div", id="facets-channels").find("ol", class_="list-unstyled")
+        category_list_items=category_list_container.find_all("a")
         subcategories=[]
         for item in category_list_items:
-            rel_link=item["href"]
+            rel_link=item["href"].replace("/kb5/islington/directory/core/../", "")
             subcategory_name=item.text
             result={
                 "subcategory_link": self.prefix + rel_link, 

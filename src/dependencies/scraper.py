@@ -2,9 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options 
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import os
 import time
-
+#//*[@id="content"]
 class Scraper:
     def __init__(self):
         self.driver_path='/usr/local/bin/chromedriver'
@@ -21,6 +23,7 @@ class Scraper:
         service=Service(self.driver_path)
         chrome_options=Options()
         chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
         self.driver=webdriver.Chrome(options=chrome_options, service=service)
         return self.driver
     
@@ -30,15 +33,21 @@ class Scraper:
             self.driver = None
 
     def scrape(self, url, save_output=False):
-        time.sleep(2)
-        driver=self.create_driver()
+        driver = self.create_driver()
         driver.get(url)
-        content=driver.page_source
-        content_title=driver.title
+        WebDriverWait(driver, 10).until(EC.any_of(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div#content')), 
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div#page-content'))
+            ))  # Adjust this selector as needed
+        content = driver.page_source
+        content_title = driver.title
+
         if save_output:
-            with open('output.html', 'w', encoding='utf-8') as file:
-             file.write(content)
+                with open('output.html', 'w', encoding='utf-8') as file:
+                    file.write(content)
         return content, content_title
+
+
     
     def get_category_page(self,region):
         category_page_url=self.get_category_directory_url(region)
