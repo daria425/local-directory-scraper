@@ -3,7 +3,7 @@ import re
 from urllib.parse import urlparse, parse_qs
 import pandas as pd
 from bs4 import BeautifulSoup
-import json
+
 file_path="./data.json"
 class ContentReaderBase(ABC):
     def __init__(self, html_content):
@@ -122,7 +122,6 @@ class CamdenContentReader(ContentReaderBase):
         return results
     def get_main_categories(self, save=True):
         category_container=self.soup_object.find("div", id="category-blocks")
-        print(category_container)
         category_block_items=category_container.find_all("div", class_="sub_cat")
         categories=[]
         for block in category_block_items:
@@ -139,7 +138,8 @@ class CamdenContentReader(ContentReaderBase):
         return categories
     
     def get_subcategories(self):
-        category_list_container=self.soup_object.find("ul", class_="2-cats")
+       
+        category_list_container=self.soup_object.find("div", class_="channel_facets").find("ul", class_=re.compile(r".*-cats"))
         category_list_items=category_list_container.find_all("a")
         subcategories=[]
         for item in category_list_items:

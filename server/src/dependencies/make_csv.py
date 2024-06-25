@@ -10,7 +10,7 @@ def make_category_csv(url, region):
         if region.lower()=="camden":
             camden_reader=CamdenContentReader(html)
             last_page=camden_reader.get_last_page()
-            print(last_page)
+       
             first_page_df=camden_reader.create_df()
             dataframes.append(first_page_df)
             if last_page is not None:
@@ -36,7 +36,7 @@ def make_category_csv(url, region):
                     dataframes.append(df)
     combined_dfs=pd.concat(dataframes, axis=0, ignore_index=True)
     print((f'csv with title {content_title}.csv will be made'))
-    return combined_dfs.to_json(orient="records")
+    return combined_dfs
 
         
         
