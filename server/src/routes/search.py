@@ -19,7 +19,7 @@ def get_regional_categories(region:str):
 
 @router.post("/subcategories")
 def get_subcategories(request_url: ScrapeRequest, region: str = Query(..., description="Region of the URL")):
-    url=replace_url(request_url.url, region)
+    url=replace_url(request_url.url)
     html=Scraper().scrape(url)[0]
     print(url)
     if region=="camden":

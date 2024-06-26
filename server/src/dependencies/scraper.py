@@ -1,6 +1,8 @@
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options 
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,11 +20,16 @@ class Scraper:
         return self.prefixes[region]+"home.page"
 
     def create_driver(self):
-        service=Service(self.driver_path)
         chrome_options=Options()
         chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--remote-debugging-port=9222")
         chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-        self.driver=webdriver.Chrome(options=chrome_options, service=service)
+        self.driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
         return self.driver
     
     def close_driver(self):
@@ -30,20 +37,25 @@ class Scraper:
             self.driver.quit()
             self.driver = None
 
-    def scrape(self, url, save_output=False):
-       driver = self.create_driver()
-       driver.get(url)
-       WebDriverWait(driver, 10).until(EC.any_of(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'div#content')), 
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'div#page-content'))
-            )) #Adjust this selector as needed
-       content = driver.page_source
-       content_title = driver.title
+    def scrape(self, url, save_output=False, wait_time=45):
+        driver = self.create_driver()
+        try:
+            driver.get(url)
+            WebDriverWait(driver, wait_time).until(EC.any_of(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div#content')), 
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div#page-content'))
+            )) # Adjust this selector as needed
+            content = driver.page_source
+            content_title = driver.title
 
-       if save_output:
+            if save_output:
                 with open('output.html', 'w', encoding='utf-8') as file:
                     file.write(content)
-       return content, content_title
+        except TimeoutException:
+            print(f"TimeoutException: The page did not load within {wait_time} seconds.")
+            content, content_title = None, None
+        
+        return content, content_title
 
 
     

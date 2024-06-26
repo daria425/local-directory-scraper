@@ -9,15 +9,15 @@ class Database():
         self.client.close()
     
 
-    def save_many(self, collection_name, items, update=None):
+    def save_many(self, collection_name, distinct_key, items, update=None):
         collection=self.db[collection_name]
-        current_links=collection.distinct("category_link")
-        print(current_links, "current links")
+        category_type=distinct_key.split("_")[0]
+        current_links=collection.distinct(distinct_key)
         for item in items:
             if update is not None:
                 item.update(update)
-            if item["category_link"] not in current_links:
-                    collection.find_one_and_replace({"category_name":item["category_name"]}, item, upsert=True)
+            if item[distinct_key] not in current_links:
+                    collection.find_one_and_replace({f"{category_type}_name":item[f"{category_type}_name"]}, item, upsert=True)
         print(f"{len(items)} entries saved to {collection_name}")
 
     def get_key_values(self, collection_name, key1, *additional_keys):

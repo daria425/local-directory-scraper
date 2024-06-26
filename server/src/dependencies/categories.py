@@ -18,13 +18,24 @@ class Categories():
     
     def get_subcategories(self, request_url, region):
         url=replace_url(request_url)
+        print("requested url and region", url, region)
         html=Scraper().scrape(url)[0]
-        print(url, region)
         if region=="camden":
             subcategories=CamdenContentReader(html).get_subcategories()
         elif region=="islington":
             subcategories=IslingtonContentReader(html).get_subcategories()
         return subcategories
+    
+    def get_subcategory_content(self, request_url, region):
+        html, title=Scraper().scrape(request_url)
+        data={
+            "subcategory_page_link": request_url, 
+            "region": region, 
+            "html": html, 
+            "title": title
+        }
+        print(f"data for {request_url}, {title} scraped successfully")
+        return data
 
     
 
