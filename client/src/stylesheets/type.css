@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 :root {
   --font-size-base: 1rem;
   --font-size-sm: 0.875rem;
@@ -16,6 +17,8 @@
   --line-height-md: calc(var(--line-height-base) + 0.1);
   --line-height-xl: calc(var(--line-height-base) + 0.2);
   --line-height-xxl: calc(var(--line-height-base) + 0.3);
+
+  --default-font-family: "Nunito Sans", sans-serif;
 }
 
 @media (min-width: 576px) {
