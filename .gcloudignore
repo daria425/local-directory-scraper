@@ -1,0 +1,7 @@
+.gitignore
+
+# Python pycache:
+
+**pycache**/
+**pycache**
+\*.pyc
