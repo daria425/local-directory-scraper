@@ -7,23 +7,28 @@ class Categories():
         self.main_collection_name="main_categories"
         self.subcategory_name="subcategories"
     
-    def get_main_categories(self, region):
-        category_page=Scraper().get_category_page(region)
-        categories=''
-        if region=="camden":
-            categories=CamdenContentReader(category_page).get_main_categories()
-        elif region=="islington":
-            categories=IslingtonContentReader(category_page).get_main_categories()
+    def get_main_categories(self, region, from_db=False, db=None):
+        if from_db:
+           categories=db.get_main_regional_categories(region)   
+        else: 
+            category_page=Scraper().get_category_page(region)
+            if region=="camden":
+                categories=CamdenContentReader(category_page).get_main_categories()
+            elif region=="islington":
+                categories=IslingtonContentReader(category_page).get_main_categories()
         return categories
-    
-    def get_subcategories(self, request_url, region):
+
+    def get_subcategories(self, request_url, region, from_db=False, db=None):
         url=replace_url(request_url)
-        print("requested url and region", url, region)
-        html=Scraper().scrape(url)[0]
-        if region=="camden":
-            subcategories=CamdenContentReader(html).get_subcategories()
-        elif region=="islington":
-            subcategories=IslingtonContentReader(html).get_subcategories()
+        if from_db:
+            subcategories=db.get_regional_subcategories(url, region)
+        else:
+            html=Scraper().scrape(url)[0]
+            if region=="camden":
+                subcategories=CamdenContentReader(html).get_subcategories()
+            elif region=="islington":
+                subcategories=IslingtonContentReader(html).get_subcategories()
+        print(subcategories)
         return subcategories
     
     def get_subcategory_content(self, request_url, region):
