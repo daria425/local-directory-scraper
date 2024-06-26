@@ -29,10 +29,10 @@ class Categories():
     def get_subcategory_content(self, request_url, region):
         html, title=Scraper().scrape(request_url)
         data={
-            "subcategory_page_link": request_url, 
+            "sub-subcategory_link": request_url, 
             "region": region, 
             "html": html, 
-            "title": title
+            "sub-subcategory_name": title
         }
         print(f"data for {request_url}, {title} scraped successfully")
         return data
