@@ -1,10 +1,10 @@
 import Description from "./Description";
-import SearchComponent from "./SearchComponent";
+import MainComponents from "./MainComponents";
 function App() {
   return (
     <main className="app">
       <Description />
-      <SearchComponent />
+      <MainComponents />
     </main>
   );
 }

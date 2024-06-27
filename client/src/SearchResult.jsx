@@ -1,14 +1,22 @@
 import PropTypes from "prop-types";
 import CsvTable from "./CSVTable.jsx";
-
+import { capitalize } from "./helpers/capitalize.js";
 export default function SearchResult({ csvData, userSelection }) {
   const { subCategory, region } = userSelection;
+  const { downloadInfo, jsonData } = csvData;
   return (
-    <section className="result">
+    <section className="result__container">
       <p className="result__heading">
-        Data for {subCategory} in {region}
+        Services and organizations for {subCategory} in {capitalize(region)}
       </p>
-      <CsvTable csvData={csvData} />
+      <CsvTable csvData={jsonData} />
+      <a
+        className="result__download-btn"
+        href={downloadInfo.downloadURL}
+        download={downloadInfo.downloadName}
+      >
+        Download CSV
+      </a>
     </section>
   );
 }

@@ -19,6 +19,7 @@
   --line-height-xxl: calc(var(--line-height-base) + 0.3);
 
   --default-font-family: "Nunito Sans", sans-serif;
+  --text-secondary: #19191a;
 }
 
 @media (min-width: 576px) {

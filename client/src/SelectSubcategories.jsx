@@ -12,14 +12,14 @@ export default function SelectSubcategories({
 }) {
   const selectionSteps = {
     2: {
-      heading_label: "Select a category",
+      heading_label: "Select a category to scrape",
       categories: mainCategories,
       selectFn: getSubcategories,
       nameLabel: "category_name",
       urlLabel: "category_link",
     },
     3: {
-      heading_label: "Select a subcategory",
+      heading_label: "Select a further subcategory to scrape",
       categories: subCategories,
       selectFn: getCSV,
       nameLabel: "subcategory_name",
@@ -41,22 +41,25 @@ export default function SelectSubcategories({
   return (
     <>
       <p className="search__heading">{currentStep.heading_label}</p>
-      {currentStep.categories &&
-        currentStep.categories.length > 0 &&
-        currentStep.categories.map((category) => (
-          <button
-            key={category[currentStep.urlLabel]}
-            onClick={() =>
-              currentStep.selectFn(
-                region,
-                category[currentStep.urlLabel],
-                category[currentStep.nameLabel]
-              )
-            }
-          >
-            {category[currentStep.nameLabel]}
-          </button>
-        ))}
+      <div className="search__btn-container">
+        {currentStep.categories &&
+          currentStep.categories.length > 0 &&
+          currentStep.categories.map((category) => (
+            <button
+              className="search__btn"
+              key={category[currentStep.urlLabel]}
+              onClick={() =>
+                currentStep.selectFn(
+                  region,
+                  category[currentStep.urlLabel],
+                  category[currentStep.nameLabel]
+                )
+              }
+            >
+              {category[currentStep.nameLabel]}
+            </button>
+          ))}
+      </div>
     </>
   );
 }

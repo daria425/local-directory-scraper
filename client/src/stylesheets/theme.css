@@ -1,0 +1,38 @@
+:root {
+  --primary-50: #f0eaff;
+  --primary-100: #d3c6ff;
+  --primary-200: #b49eff;
+  --primary-300: #9676ff;
+  --primary-400: #8457ff; /* Primary color */
+  --primary-500: #6e3eff;
+  --primary-600: #5a2fff;
+  --primary-700: #4a27e6;
+  --primary-800: #3b1fad;
+  --primary-900: #2d187f;
+
+  --primary-button-default: var(--primary-500);
+  --primary-button-hover: var(--primary-700);
+
+  --highlight: rgba(255, 255, 255, 0.8);
+  --grey-50: #f5f5fa;
+  --grey-100: #ebebf5;
+  --grey-200: #e0e0f0;
+  --grey-300: #d1d1e6;
+  --grey-400: #b7b7d9;
+  --grey-500: #9e9ecc;
+  --grey-600: #8686c0;
+  --grey-700: #7373b6;
+  --grey-800: #5a5a9f;
+  --grey-900: #43438c;
+
+  --layer-base: var(--grey-50); /* Base layer */
+  --layer-background: var(--grey-100); /* Background layer */
+  --layer-surface: var(--grey-200); /* Surface layer */
+  --layer-overlay: var(--grey-300); /* Overlay layer */
+  --layer-shadow: var(--grey-400); /* Shadow layer */
+  --layer-border: var(--grey-500); /* Border layer */
+  --layer-focus: var(--grey-600); /* Focus layer */
+  --layer-accent: var(--grey-700); /* Accent layer */
+  --layer-highlight: var(--highlight); /* Highlight layer */
+  --layer-selected: var(--grey-900);
+}

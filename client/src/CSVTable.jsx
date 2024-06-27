@@ -1,11 +1,9 @@
 import PropTypes from "prop-types";
 export default function CsvTable({ csvData }) {
-  const columnLabels = Object.keys(csvData);
-  const columnValues = Object.values(csvData);
+  const columnLabels = csvData[0];
+  const columnValues = csvData.slice(1, -1);
   const valueArr = columnValues.map((value) => Object.values(value));
-  const transposedValues = valueArr[0].map((_, colIndex) =>
-    valueArr.map((row) => row[colIndex])
-  );
+
   return (
     <div className="result__table-constraint">
       <div className="result__table-container">
@@ -20,7 +18,7 @@ export default function CsvTable({ csvData }) {
             </tr>
           </thead>
           <tbody className="result__table-body">
-            {transposedValues.map((row, rowIndex) => (
+            {valueArr.map((row, rowIndex) => (
               <tr className="result__table-row" key={rowIndex}>
                 {row.map((value, colIndex) => (
                   <td
@@ -43,5 +41,5 @@ export default function CsvTable({ csvData }) {
 CsvTable.propTypes = {
   dataLoading: PropTypes.bool,
   fetchError: PropTypes.string,
-  csvData: PropTypes.object,
+  csvData: PropTypes.array,
 };

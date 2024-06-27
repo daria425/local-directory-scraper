@@ -1,40 +1,88 @@
 @import url("type.css");
+@import url("theme.css");
 body {
   font-family: var(--default-font-family);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-base);
 }
 
 h1 {
   font-size: var(--font-size-lg);
-  font-weight: 600;
+  font-weight: 700;
+}
+.app {
+  padding: 10px 10px;
+}
+.description {
+  text-align: center;
 }
 
+.description__text {
+  font-size: var(--font-size-sm);
+}
+.search {
+  border: 1px dashed var(--primary-500);
+  border-radius: 4px;
+}
+.search__heading {
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.search__btn-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 0px 20px;
+  margin: 6px 0;
+}
+
+.search__btn-container--regions {
+  grid-template-columns: repeat(2, 1fr);
+}
+.search__btn,
+.result__download-btn {
+  border: none;
+  background-color: var(--primary-button-default);
+  color: #fff;
+  font-size: var(--font-size-xs);
+  border-radius: 2px;
+  padding: 3px 6px;
+}
+
+.search__btn:hover {
+  background-color: var(--primary-button-hover);
+}
 .result__table-constraint {
-  padding: 0 20px;
+  padding: 20px 20px;
   height: 400px;
   overflow: auto;
+  background-color: var(--layer-background);
 }
 .result__table-container {
   max-width: 100%;
   font-size: var(--font-size-xs);
   box-sizing: border-box;
+  max-height: 100%;
+  overflow: auto;
 }
 
 .result__table {
   width: 100%;
   border-collapse: collapse;
+  background-color: var(--layer-highlight);
 }
 
 .result__table-header,
 .result__table-content {
-  border: 1px solid #ddd;
+  border: 1px solid var(--layer-border);
   padding: 8px;
   white-space: nowrap; /* Ensures content does not wrap */
   overflow: hidden;
 }
 
 .result__table-header {
-  background-color: #f2f2f2;
+  background-color: var(--layer-overlay);
   text-align: left;
 }
 

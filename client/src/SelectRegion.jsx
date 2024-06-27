@@ -1,14 +1,21 @@
 import PropTypes from "prop-types";
+import { capitalize } from "./helpers/capitalize";
 export default function SelectRegion({ getMainCategories }) {
   const regions = ["camden", "islington"];
   return (
     <>
       <p className="search__heading">Select a council to begin:</p>
-      {regions.map((region) => (
-        <button key={region} onClick={() => getMainCategories(region)}>
-          {region[0].toUpperCase() + region.slice(1)}
-        </button>
-      ))}
+      <div className="search__btn-container search__btn-container--regions">
+        {regions.map((region) => (
+          <button
+            className="search__btn"
+            key={region}
+            onClick={() => getMainCategories(region)}
+          >
+            {capitalize(region)}
+          </button>
+        ))}
+      </div>
     </>
   );
 }
