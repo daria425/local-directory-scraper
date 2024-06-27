@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-export default function SelectionStepOne({ getMainCategories }) {
+export default function SelectRegion({ getMainCategories }) {
   const regions = ["camden", "islington"];
   return (
     <>
@@ -13,6 +13,6 @@ export default function SelectionStepOne({ getMainCategories }) {
   );
 }
 
-SelectionStepOne.propTypes = {
+SelectRegion.propTypes = {
   getMainCategories: PropTypes.func,
 };
