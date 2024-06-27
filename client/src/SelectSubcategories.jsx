@@ -8,6 +8,7 @@ export default function SelectSubcategories({
   fetchError,
   region,
   dataLoading,
+  getCSV,
 }) {
   const selectionSteps = {
     2: {
@@ -20,7 +21,7 @@ export default function SelectSubcategories({
     3: {
       heading_label: "Select a subcategory",
       categories: subCategories,
-      selectFn: () => {},
+      selectFn: getCSV,
       nameLabel: "subcategory_name",
       urlLabel: "subcategory_link",
     },
@@ -44,9 +45,13 @@ export default function SelectSubcategories({
         currentStep.categories.length > 0 &&
         currentStep.categories.map((category) => (
           <button
-            key={category[currentStep.urlLabel]} // Make sure category has a unique id
+            key={category[currentStep.urlLabel]}
             onClick={() =>
-              currentStep.selectFn(region, category[currentStep.urlLabel])
+              currentStep.selectFn(
+                region,
+                category[currentStep.urlLabel],
+                category[currentStep.nameLabel]
+              )
             }
           >
             {category[currentStep.nameLabel]}
@@ -63,4 +68,5 @@ SelectSubcategories.propTypes = {
   dataLoading: PropTypes.bool,
   getSubcategories: PropTypes.func,
   region: PropTypes.string,
+  getCSV: PropTypes.func,
 };

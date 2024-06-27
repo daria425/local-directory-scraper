@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { api_base } from "./api/api_base";
+import { testCSVData } from "../testData";
 import SelectRegion from "./SelectRegion";
 import SelectSubcategories from "./SelectSubcategories";
+import SearchResult from "./SearchResult";
 export default function SearchComponent() {
   const [selectionStep, setSelectionStep] = useState(1);
-  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [userSelection, setUserSelection] = useState({});
   const [categories, setCategories] = useState({});
+  const [csvData, setCsvData] = useState(testCSVData);
   const [fetchError, setFetchError] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
 
   async function getMainCategories(region) {
     setDataLoading(true);
-    setSelectedRegion(region);
+    setUserSelection({ ...userSelection, region: region });
     setSelectionStep(2);
     try {
       const response = await fetch(`${api_base}search/?region=${region}`);
@@ -32,7 +35,8 @@ export default function SearchComponent() {
       setDataLoading(false);
     }
   }
-  async function getSubcategories(region, url) {
+  async function getSubcategories(region, url, mainCategory) {
+    setUserSelection({ ...userSelection, mainCategory: mainCategory });
     setDataLoading(true);
     setSelectionStep(3);
     try {
@@ -68,6 +72,35 @@ export default function SearchComponent() {
     setSelectionStep(selectionStep);
   }
 
+  async function getCSV(region, url, subCategory) {
+    setDataLoading(true);
+    setUserSelection({ ...userSelection, subCategory: subCategory });
+    console.log(url);
+    try {
+      const response = await fetch(`${api_base}csv-file/?region=${region}`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ "url": url }),
+      });
+      if (response.status === 200) {
+        const csvData = await response.json();
+        console.log(csvData);
+        setCsvData(csvData);
+        setFetchError(null); // Clear any previous errors
+      } else {
+        const errorText = await response.text();
+        setFetchError(`Error: ${response.status} - ${errorText}`);
+        setCsvData(null); // Clear categories if there's an error
+      }
+    } catch (error) {
+      setFetchError(`Network error: ${error.message}`);
+      setCsvData(null); // Clear categories if there's an error
+    } finally {
+      setDataLoading(false);
+    }
+  }
   return (
     <section className="search">
       {selectionStep === 1 && (
@@ -78,8 +111,9 @@ export default function SearchComponent() {
           <SelectSubcategories
             selectionStep={selectionStep}
             mainCategories={categories?.mainCategories}
-            region={selectedRegion}
+            region={userSelection?.region}
             getSubcategories={getSubcategories}
+            getCSV={getCSV}
             subCategories={categories.subCategories}
             fetchError={fetchError}
             dataLoading={dataLoading}
@@ -90,6 +124,9 @@ export default function SearchComponent() {
             </button>
           </div>
         </>
+      )}
+      {csvData && (
+        <SearchResult csvData={csvData} userSelection={userSelection} />
       )}
     </section>
   );

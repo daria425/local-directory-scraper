@@ -14,6 +14,7 @@ class Scraper:
             "camden": "https://cindex.camden.gov.uk/kb5/camden/cd/", 
             "islington": "https://findyour.islington.gov.uk/kb5/islington/directory/"
         }
+        self.cache={}
     
     def get_category_directory_url(self, region):
         return self.prefixes[region] + "home.page"
@@ -37,6 +38,9 @@ class Scraper:
             self.driver = None
 
     def scrape(self, url, save_output=False, wait_time=45):
+        if url in self.cache:
+            print(f"Returning cached content for {url}")
+            return self.cache[url]
         if self.driver is None:
             self.create_driver()
         try:
@@ -58,7 +62,8 @@ class Scraper:
             print(f"WebDriverException: {e}")
             content, content_title = None, None
             self.close_driver()
-        
+
+        self.cache[url] = (content, content_title)
         return content, content_title
     
     def get_category_page(self, region):
