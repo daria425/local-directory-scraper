@@ -6,6 +6,6 @@ router=APIRouter(prefix="/csv-file")
 
 @router.post("/")
 def send_csv(request_url: ScrapeRequest, region: str = Query(..., description="Region of the URL")):
-    url=replace_url(request_url.url, region)
+    url=replace_url(request_url.url)
     df_json=make_category_csv(url, region)
     return df_json
