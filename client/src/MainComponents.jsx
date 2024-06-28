@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api_base } from "./api/api_base";
 import { testCSVData } from "../testData"; //eslint-disable-line
+import Loader from "./hooks/Loader";
 import Papa from "papaparse";
 import SearchComponent from "./SearchComponent";
 import SearchResult from "./SearchResult";
@@ -74,6 +75,7 @@ export default function MainComponents() {
 
   async function getCSV(region, url, subCategory) {
     setDataLoading(true);
+    setSelectionStep(0);
     setUserSelection({ ...userSelection, subCategory: subCategory });
     console.log(url);
     try {
@@ -121,8 +123,10 @@ export default function MainComponents() {
     }
   }
   return (
-    <>
-      {csvData ? (
+    <section className="container">
+      {dataLoading && <Loader />}
+      {fetchError && <div className="error">{fetchError}</div>}
+      {!dataLoading && !fetchError && csvData ? (
         <section className="result">
           <SearchResult csvData={csvData} userSelection={userSelection} />
         </section>
@@ -134,12 +138,10 @@ export default function MainComponents() {
           getSubcategories={getSubcategories}
           getCSV={getCSV}
           subCategories={categories.subCategories}
-          fetchError={fetchError}
-          dataLoading={dataLoading}
           getMainCategories={getMainCategories}
           handleChangeStep={handleChangeStep}
         />
       )}
-    </>
+    </section>
   );
 }

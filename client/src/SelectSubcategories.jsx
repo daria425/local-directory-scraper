@@ -1,13 +1,10 @@
 import PropTypes from "prop-types";
-import Loader from "./hooks/Loader";
 export default function SelectSubcategories({
   subCategories,
   selectionStep,
   getSubcategories,
   mainCategories,
-  fetchError,
   region,
-  dataLoading,
   getCSV,
 }) {
   const selectionSteps = {
@@ -30,21 +27,12 @@ export default function SelectSubcategories({
 
   const currentStep = selectionSteps[selectionStep];
 
-  if (fetchError) {
-    return <div className="error">{fetchError}</div>;
-  }
-
-  if (dataLoading) {
-    return <Loader />;
-  }
-
-  return (
-    <>
-      <p className="search__heading">{currentStep.heading_label}</p>
-      <div className="search__btn-container">
-        {currentStep.categories &&
-          currentStep.categories.length > 0 &&
-          currentStep.categories.map((category) => (
+  if (currentStep.categories && currentStep.categories.length > 0) {
+    return (
+      <>
+        <p className="search__heading">{currentStep.heading_label}</p>
+        <div className="search__btn-container">
+          {currentStep.categories.map((category) => (
             <button
               className="search__btn"
               key={category[currentStep.urlLabel]}
@@ -59,9 +47,10 @@ export default function SelectSubcategories({
               {category[currentStep.nameLabel]}
             </button>
           ))}
-      </div>
-    </>
-  );
+        </div>
+      </>
+    );
+  }
 }
 SelectSubcategories.propTypes = {
   mainCategories: PropTypes.array,

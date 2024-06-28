@@ -12,6 +12,9 @@ h1 {
 .app {
   padding: 10px 10px;
 }
+.container {
+  border: 1px solid red;
+}
 .description {
   text-align: center;
 }
@@ -19,10 +22,7 @@ h1 {
 .description__text {
   font-size: var(--font-size-sm);
 }
-.search {
-  border: 1px dashed var(--primary-500);
-  border-radius: 4px;
-}
+
 .search__heading {
   font-weight: 600;
   text-align: center;

@@ -5,7 +5,7 @@ export default function SearchResult({ csvData, userSelection }) {
   const { subCategory, region } = userSelection;
   const { downloadInfo, jsonData } = csvData;
   return (
-    <section className="result__container">
+    <div className="result__container">
       <p className="result__heading">
         Services and organizations for {subCategory} in {capitalize(region)}
       </p>
@@ -17,7 +17,7 @@ export default function SearchResult({ csvData, userSelection }) {
       >
         Download CSV
       </a>
-    </section>
+    </div>
   );
 }
 
