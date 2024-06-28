@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api_base } from "./api/api_base";
 import { testCSVData } from "../testData"; //eslint-disable-line
-import Loader from "./hooks/Loader";
+import Loader from "./Loader";
 import Papa from "papaparse";
 import SearchComponent from "./SearchComponent";
 import SearchResult from "./SearchResult";
@@ -70,6 +70,17 @@ export default function MainComponents() {
   }
 
   function handleChangeStep(selectionStep) {
+    console.log(selectionStep);
+    if (selectionStep === 2) {
+      setCategories({ ...categories, subCategories: null });
+    } else if (selectionStep === 1) {
+      setCategories({
+        ...categories,
+        mainCategories: null,
+        subCategories: null,
+      });
+    }
+
     setSelectionStep(selectionStep);
   }
 

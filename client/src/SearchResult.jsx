@@ -6,6 +6,7 @@ export default function SearchResult({ csvData, userSelection }) {
   const { downloadInfo, jsonData } = csvData;
   return (
     <div className="result__container">
+      <h2 className="result__preview">CSV Preview:</h2>
       <p className="result__heading">
         Services and organizations for {subCategory} in {capitalize(region)}
       </p>
