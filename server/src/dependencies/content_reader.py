@@ -48,6 +48,7 @@ class ContentReaderBase(ABC):
         results = self.extract_info()
         print(results)
         df = pd.DataFrame.from_dict(results)
+        df["name"]=df["name"].str.strip()
         df["description"] = df["description"].str.strip()
         return df
 
