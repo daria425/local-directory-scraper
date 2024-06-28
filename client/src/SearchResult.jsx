@@ -1,7 +1,11 @@
 import PropTypes from "prop-types";
 import CsvTable from "./CSVTable.jsx";
 import { capitalize } from "./helpers/capitalize.js";
-export default function SearchResult({ csvData, userSelection }) {
+export default function SearchResult({
+  csvData,
+  userSelection,
+  startNewSearch,
+}) {
   const { subCategory, region } = userSelection;
   const { downloadInfo, jsonData } = csvData;
   return (
@@ -19,7 +23,10 @@ export default function SearchResult({ csvData, userSelection }) {
         >
           Download CSV
         </a>
-        <button className="result__btn result__btn--new-search">
+        <button
+          onClick={startNewSearch}
+          className="result__btn result__btn--new-search"
+        >
           New Search
         </button>
       </div>
@@ -32,4 +39,5 @@ SearchResult.propTypes = {
   userSelection: PropTypes.object,
   dataLoading: PropTypes.bool,
   fetchError: PropTypes.string,
+  startNewSearch: PropTypes.func,
 };

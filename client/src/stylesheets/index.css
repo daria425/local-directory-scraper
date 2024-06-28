@@ -42,12 +42,16 @@ button {
     background-position: 250% 0, 250% 0;
   }
 }
+
+.error,
 .loader-container {
-  height: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.loader-container {
+  height: 50px;
 }
 .app {
   padding: 20px 10px;
@@ -106,7 +110,8 @@ button {
   grid-template-columns: repeat(2, 1fr);
 }
 .search__btn,
-.result__btn {
+.result__btn,
+.error__btn {
   border: none;
   background-color: var(--primary-button-default);
   color: #fff;
@@ -117,22 +122,30 @@ button {
   line-height: 1;
 }
 
+.error__btn {
+  background-color: var(--danger-light);
+  color: var(--danger-dark);
+  border: 1px solid var(--danger-dark);
+  padding: 2px 6px;
+}
 .search__btn:hover,
 .result__btn:hover {
   background-color: var(--primary-button-hover);
 }
 
+.error__btn--new-search,
 .result__btn--new-search {
-  margin-left: 10px;
   background-color: var(--primary-50);
   color: var(--primary-900);
   border: 1px solid var(--primary-900);
   padding: 2px 6px;
+  margin-left: 10px;
 }
 
 .result__btn--new-search:hover {
   background-color: var(--primary-100);
 }
+
 .result__container {
   display: grid;
   row-gap: 6px;

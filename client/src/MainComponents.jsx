@@ -13,6 +13,7 @@ export default function MainComponents() {
   const [csvData, setCsvData] = useState(null);
   const [fetchError, setFetchError] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
+  const [retryFunction, setRetryFunction] = useState(null);
 
   async function getMainCategories(region) {
     setDataLoading(true);
@@ -28,11 +29,13 @@ export default function MainComponents() {
       } else {
         const errorText = await response.text();
         setFetchError(`Error: ${response.status} - ${errorText}`);
-        setCategories({ ...categories, mainCategories: null }); // Clear categories if there's an error
+        setCategories({ ...categories, mainCategories: null });
+        setRetryFunction(() => () => getMainCategories(region)); // Clear categories if there's an error
       }
     } catch (error) {
       setFetchError(`Network error: ${error.message}`);
-      setCategories({ ...categories, mainCategories: null }); // Clear categories if there's an error
+      setCategories({ ...categories, mainCategories: null });
+      setRetryFunction(() => () => getMainCategories(region)); // Clear categories if there's an error
     } finally {
       setDataLoading(false);
     }
@@ -60,11 +63,16 @@ export default function MainComponents() {
       } else {
         const errorText = await response.text();
         setFetchError(`Error: ${response.status} - ${errorText}`);
-        setCategories({ ...categories, subCategories: null }); // Clear categories if there's an error
+        setCategories({ ...categories, subCategories: null });
+        setRetryFunction(
+          () => () => getSubcategories(region, url, mainCategory)
+        );
       }
     } catch (error) {
       setFetchError(`Network error: ${error.message}`);
-      setCategories({ ...categories, subCategories: null }); // Clear categories if there's an error
+      setCategories({ ...categories, subCategories: null });
+      setRetryFunction(() => () => getSubcategories(region, url, mainCategory));
+      // Clear categories if there's an error
     } finally {
       setDataLoading(false);
     }
@@ -126,21 +134,43 @@ export default function MainComponents() {
         const errorText = await response.text();
         setFetchError(`Error: ${response.status} - ${errorText}`);
         setCsvData(null); // Clear categories if there's an error
+        setRetryFunction(() => () => getCSV(region, url, subCategory));
       }
     } catch (error) {
       setFetchError(`Network error: ${error.message}`);
-      setCsvData(null); // Clear categories if there's an error
+      setCsvData(null);
+      setRetryFunction(() => () => getCSV(region, url, subCategory)); // Clear categories if there's an error
     } finally {
       setDataLoading(false);
+    }
+  }
+
+  function startNewSearch() {
+    setSelectionStep(1);
+    setCsvData(null);
+    setUserSelection({});
+    setCategories({});
+    if (fetchError) {
+      setFetchError(null);
     }
   }
   return (
     <section className="container">
       {dataLoading && <Loader />}
-      {fetchError && <Error errorMessage={fetchError} />}
+      {fetchError && (
+        <Error
+          errorMessage={fetchError}
+          retryFunction={retryFunction}
+          startNewSearch={startNewSearch}
+        />
+      )}
       {!dataLoading && !fetchError && csvData ? (
         <section className="result">
-          <SearchResult csvData={csvData} userSelection={userSelection} />
+          <SearchResult
+            csvData={csvData}
+            userSelection={userSelection}
+            startNewSearch={startNewSearch}
+          />
         </section>
       ) : (
         <SearchComponent

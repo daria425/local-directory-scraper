@@ -10,6 +10,8 @@
   --primary-800: #3b1fad;
   --primary-900: #2d187f;
 
+  --danger-dark: #290000;
+  --danger-light: #e6bdbd;
   --primary-button-default: var(--primary-500);
   --primary-button-hover: var(--primary-700);
 
