@@ -1,5 +1,8 @@
 @import url("type.css");
 @import url("theme.css");
+html > * {
+  box-sizing: border-box;
+}
 body {
   font-family: var(--default-font-family);
   font-size: var(--font-size-base);
@@ -16,6 +19,9 @@ h1 {
 
 h2 {
   font-weight: 700;
+}
+button {
+  font-family: var(--default-font-family);
 }
 .loader {
   height: 4px;
@@ -100,7 +106,7 @@ h2 {
   grid-template-columns: repeat(2, 1fr);
 }
 .search__btn,
-.result__download-btn {
+.result__btn {
   border: none;
   background-color: var(--primary-button-default);
   color: #fff;
@@ -108,11 +114,24 @@ h2 {
   border-radius: 2px;
   padding: 3px 6px;
   display: inline-block;
+  line-height: 1;
 }
 
 .search__btn:hover,
-.result__download-btn:hover {
+.result__btn:hover {
   background-color: var(--primary-button-hover);
+}
+
+.result__btn--new-search {
+  margin-left: 10px;
+  background-color: var(--primary-50);
+  color: var(--primary-900);
+  border: 1px solid var(--primary-900);
+  padding: 2px 6px;
+}
+
+.result__btn--new-search:hover {
+  background-color: var(--primary-100);
 }
 .result__container {
   display: grid;
@@ -157,7 +176,7 @@ h2 {
 
 @media (min-width: 768px) {
   .app {
-    padding: 0px 40px;
+    padding: 40px 40px;
   }
   .container {
     width: 100%;
@@ -166,40 +185,6 @@ h2 {
 
 @media (min-width: 1000px) {
   .app {
-    padding: 0px 100px;
+    padding: 100px 100px;
   }
 }
-
-/* @media (max-width: 600px) {
-  .responsive-table thead {
-    display: none;
-  }
-
-  .result__table,
-  .result__table-body,
-  .result__table-row,
-  .result__table-content {
-    display: block;
-    width: 100%;
-  }
-
-  .result__table-row {
-    margin-bottom: 15px;
-  }
-
-  .result__table-content {
-    text-align: right;
-    padding-left: 50%;
-    position: relative;
-  }
-
-  .result__table-content::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 0;
-    width: 50%;
-    padding-left: 15px;
-    text-align: left;
-    font-weight: bold;
-  }
-} */

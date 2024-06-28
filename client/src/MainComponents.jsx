@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api_base } from "./api/api_base";
 import { testCSVData } from "../testData"; //eslint-disable-line
 import Loader from "./Loader";
+import Error from "./Error";
 import Papa from "papaparse";
 import SearchComponent from "./SearchComponent";
 import SearchResult from "./SearchResult";
@@ -136,7 +137,7 @@ export default function MainComponents() {
   return (
     <section className="container">
       {dataLoading && <Loader />}
-      {fetchError && <div className="error">{fetchError}</div>}
+      {fetchError && <Error errorMessage={fetchError} />}
       {!dataLoading && !fetchError && csvData ? (
         <section className="result">
           <SearchResult csvData={csvData} userSelection={userSelection} />

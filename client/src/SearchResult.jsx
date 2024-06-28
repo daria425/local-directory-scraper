@@ -11,13 +11,18 @@ export default function SearchResult({ csvData, userSelection }) {
         Services and organizations for {subCategory} in {capitalize(region)}
       </p>
       <CsvTable csvData={jsonData} />
-      <a
-        className="result__download-btn"
-        href={downloadInfo.downloadURL}
-        download={downloadInfo.downloadName}
-      >
-        Download CSV
-      </a>
+      <div className="result__btns">
+        <a
+          className="result__btn"
+          href={downloadInfo.downloadURL}
+          download={downloadInfo.downloadName}
+        >
+          Download CSV
+        </a>
+        <button className="result__btn result__btn--new-search">
+          New Search
+        </button>
+      </div>
     </div>
   );
 }
