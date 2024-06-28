@@ -114,7 +114,11 @@ h2 {
 .result__download-btn:hover {
   background-color: var(--primary-button-hover);
 }
-
+.result__container {
+  display: grid;
+  row-gap: 6px;
+  grid-template-rows: auto auto auto 1fr;
+}
 .result__table-constraint,
 .result__table-container {
   max-height: 400px;
@@ -154,14 +158,8 @@ h2 {
 @media (min-width: 768px) {
   .app {
     padding: 0px 40px;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
   }
   .container {
-    max-height: 400px;
     width: 100%;
   }
 }
