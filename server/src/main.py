@@ -4,7 +4,7 @@ from .routes import search, csv_file
 app = FastAPI()
 
 origins=[
-  "http://localhost:5173"
+  "http://localhost:5173", "https://local-directory-scraping.web.app"
 ]
 
 app.add_middleware(    
