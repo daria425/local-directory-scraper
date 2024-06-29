@@ -48,8 +48,9 @@ class ContentReaderBase(ABC):
         results = self.extract_info()
         print(results)
         df = pd.DataFrame.from_dict(results)
-        df["name"]=df["name"].str.strip()
+        df["name"]=df["name"].str.strip().replace('\n', '')
         df["description"] = df["description"].str.strip()
+        print(df)
         return df
 
 class CamdenContentReader(ContentReaderBase):

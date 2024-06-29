@@ -48,5 +48,5 @@ RUN pip install poetry \
 COPY . .
 
 # Command to run the application
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "src.main:app"]
+CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "360", "src.main:app"]
 
