@@ -149,11 +149,11 @@ button {
 .result__container {
   display: grid;
   row-gap: 6px;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: repeat(auto-fill, mimnax(0, 1fr));
 }
 .result__table-constraint,
 .result__table-container {
-  max-height: 400px;
+  max-height: 200px;
 }
 .result__table-constraint {
   padding: 20px 20px;
