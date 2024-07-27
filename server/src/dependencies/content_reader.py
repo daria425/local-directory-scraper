@@ -1,14 +1,68 @@
 from abc import ABC, abstractmethod
 import re
 from urllib.parse import urlparse, parse_qs
+from .autotagging import classify
 import pandas as pd
 from bs4 import BeautifulSoup
+
 
 file_path="./data.json"
 class ContentReaderBase(ABC):
     def __init__(self, html_content):
         self.html_content = html_content
         self.soup_object = BeautifulSoup(self.html_content, "html.parser")
+        self.tag_list = [
+    "benefits-advice",
+    "debt-advice",
+    "budget-advice",
+    "homelessness",
+    "housing-rights",
+    "home-swap",
+    "energy-bills",
+    "council-tax",
+    "credit-union",
+    "mental-health",
+    "long-term-health-condition",
+    "disability",
+    "neurodiversity",
+    "cancer",
+    "bereavement",
+    "drugs&alcohol",
+    "domestic-abuse",
+    "criminal-justice",
+    "gambling",
+    "fire&flood",
+    "victim-support",
+    "suicide",
+    "families",
+    "children",
+    "young-adult",
+    "elder",
+    "single-parents",
+    "young-parents",
+    "pregnancy",
+    "adult-social-care",
+    "employability",
+    "small-businesses",
+    "foodbank",
+    "food-projects",
+    "community-larder",
+    "clothing-bank",
+    "household-goods",
+    "community-hub",
+    "ex-army",
+    "refugees",
+    "carers",
+    "womens-support",
+    "mens-support",
+    "lgbtq+",
+    "fishermen",
+    "drinks",
+    "hospitality",
+    "racial-justice"
+]
+
+
 
     @staticmethod
     def read_html_from_file(file_path):
@@ -32,6 +86,8 @@ class ContentReaderBase(ABC):
         id_value = query_params.get(query_str, [None])[0]
         return id_value
     
+
+    
     @abstractmethod
     def get_main_categories(self):
         pass
@@ -44,13 +100,17 @@ class ContentReaderBase(ABC):
     def extract_info(self):
         pass
 
+    def create_tag_str(self, text):
+        top_tags=classify(self.tag_list, text)
+        tag_strings=[item[0] for item in top_tags]
+        tags=" ".join(tag_strings)
+        return tag_strings
+
     def create_df(self):
         results = self.extract_info()
-        print(results)
         df = pd.DataFrame.from_dict(results)
-        df["name"]=df["name"].str.strip().replace('\n', '')
-        df["description"] = df["description"].str.strip()
-        print(df)
+        df["Name"]=df["Name"].str.strip().replace('\n', '')
+        df["Short text description"] = df["Short text description"].str.strip()
         return df
 
 class CamdenContentReader(ContentReaderBase):
@@ -107,20 +167,21 @@ class CamdenContentReader(ContentReaderBase):
                     org_email = org_email.replace("mailto:", "")
                 elif link.find("i", class_="fa fa-external-link"):
                     org_website = link["href"]
-            
+            tags=self.create_tag_str(org_description_text)
             result = {
                 "id": org_id,
-                "name": org_name,
-                "description": org_description_text,
-                "organization_link": self.prefix + org_link,
-                "address": org_adress_lines,
-                "postcode": org_postcode,
-                "organization_website": org_website,
-                "telephone": telephone_num_lines,
-                "email": org_email
+                "Name": org_name,
+                "Category tags": tags, 
+                "Short text description": org_description_text,
+                "Postcode": org_postcode,
+                "Website": org_website,
+                "Phone - call": telephone_num_lines,
+                "Local / National": "Local", 
+                "location": "Camden", 
+                "Email": org_email
             }
+           #get the tags with the description here
             results.append(result)
-        
         return results
     def get_main_categories(self, save=True):
         category_container=self.soup_object.find("div", id="category-blocks")
@@ -198,13 +259,18 @@ class IslingtonContentReader(ContentReaderBase):
                 elif btn.find("span", class_="fas fa-phone"):
                     org_phone=btn['href']
                     org_phone=org_phone.replace("tel:", "")
+            tags=self.create_tag_str(org_description)
             result={
-                "id":org_id,
-                "name": org_name, 
-                "description": org_description, 
-                "organization_link": self.prefix+org_link, 
-                "postcode": org_postcode, 
-                "organization_website":org_website
+                "id": org_id,
+                "Name": org_name,
+                "Category tags": tags,
+                "Short text description": org_description,
+                "Postcode": org_postcode,
+                "Website": org_website,
+                "Phone - call":org_phone,
+                "Local / National": "Local", 
+                "location": "Islington", 
+                "Email": org_email
             }
             results.append(result)
         return results
