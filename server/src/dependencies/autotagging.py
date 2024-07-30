@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 import os
 import requests
-from transformers import pipeline
 from .endpoint_request import make_endpoint_request
+import json
 load_dotenv()
 hf_token=os.getenv("HF_TOKEN")
 api_url=os.getenv("HF_MODEL_URL")
@@ -38,7 +38,11 @@ def classify_tags(tag_list,text, use_local_classifier, chunk_size=10, num_tags=5
             zips.append(zipped_response)
     joined_list=[item for tuple_chunk in zips for item in tuple_chunk ]
     sorted_list=sorted(joined_list, key=lambda x: x[1], reverse=True)
-    return sorted_list[:num_tags]
+    # with open("./scores.json", 'a') as json_file:
+    #     json.dump(sorted_list, json_file)
+    #     json_file.write('\n')
+    total_scores=json.dumps(sorted_list)
+    return sorted_list[:num_tags], total_scores
     
 def classify_location(text,use_local_classifier):
      response=''

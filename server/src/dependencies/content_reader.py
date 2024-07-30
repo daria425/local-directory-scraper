@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import re
 from urllib.parse import urlparse, parse_qs
-from .autotagging import classify_tags
+from .autotagging import classify_tags, classify_location
 import pandas as pd
 from bs4 import BeautifulSoup
 
@@ -102,10 +102,10 @@ class ContentReaderBase(ABC):
         pass
 
     def create_tag_str(self, text):
-        top_tags=classify_tags(self.tag_list, text, self.use_local_classifier)
-        tag_strings=[item[0] for item in top_tags]
+        top_tags, total_scores=classify_tags(self.tag_list, text, self.use_local_classifier)
+        tag_strings=[f"#{item[0]}" for item in top_tags]
         tags=" ".join(tag_strings)
-        return tags
+        return tags, total_scores
 
     def create_df(self):
         results = self.extract_info()
@@ -168,7 +168,8 @@ class CamdenContentReader(ContentReaderBase):
                     org_email = org_email.replace("mailto:", "")
                 elif link.find("i", class_="fa fa-external-link"):
                     org_website = link["href"]
-            tags=self.create_tag_str(org_description_text)
+            tags, total_scores=self.create_tag_str(org_description_text)
+            location=classify_location(org_description_text, self.use_local_classifier)
             result = {
                 "id": org_id,
                 "Name": org_name,
@@ -177,9 +178,10 @@ class CamdenContentReader(ContentReaderBase):
                 "Postcode": org_postcode,
                 "Website": org_website,
                 "Phone - call": telephone_num_lines,
-                "Local / National": "Local", 
-                "location": "Camden", 
-                "Email": org_email
+                "Local / National": location, 
+                "location": location if location == "National" else "Camden", 
+                "Email": org_email, 
+                "Scores": total_scores
             }
            #get the tags with the description here
             results.append(result)
@@ -261,6 +263,7 @@ class IslingtonContentReader(ContentReaderBase):
                     org_phone=btn['href']
                     org_phone=org_phone.replace("tel:", "")
             tags=self.create_tag_str(org_description)
+            location=classify_location(org_description, self.use_local_classifier)
             result={
                 "id": org_id,
                 "Name": org_name,
@@ -269,8 +272,8 @@ class IslingtonContentReader(ContentReaderBase):
                 "Postcode": org_postcode,
                 "Website": org_website,
                 "Phone - call":org_phone,
-                "Local / National": "Local", 
-                "location": "Islington", 
+                "Local / National": location, 
+                "location": location if location == "National" else "Islington", 
                 "Email": org_email
             }
             results.append(result)

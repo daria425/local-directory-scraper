@@ -15,7 +15,6 @@ gunicorn = "^22.0.0"
 requests-html = "^0.10.0"
 pymongo = {extras = ["srv"], version = "^4.7.3"}
 webdriver-manager = "^4.0.1"
-transformers = {extras = ["torch"], version = "^4.43.3"}
 google-cloud-aiplatform = "^1.60.0"
 
 
