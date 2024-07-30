@@ -9,8 +9,21 @@ class Database():
     
     def close(self):
         self.client.close()
-    
 
+    def get_key_values(self, collection_name, key1, *additional_keys, exclude_field_name=False):
+        if exclude_field_name and additional_keys:
+            raise ValueError("Cannot exclude field names when returning multiple key values")
+        collection = self.db[collection_name]
+        projection = {key1: 1, "_id": 0}
+        for key in additional_keys:
+            projection[key] = 1
+        keys = collection.find({}, projection)
+        key_value_list=list(keys)
+        if exclude_field_name:
+            key_value_list=[item[key1] for item in key_value_list]
+        return key_value_list
+    
+class LocalDirectoryDatabase(Database):
     def save_many(self, collection_name, distinct_key, items, update=None):
         collection=self.db[collection_name]
         category_type=distinct_key.split("_")[0]
@@ -47,19 +60,8 @@ class Database():
         results = collection.find( {"subcategory_link": {'$regex': regex_pattern}}, projection={"_id":0})
         results_list = list(results)
         return results_list
-        
-
-
-    def get_key_values(self, collection_name, key1, *additional_keys):
-        collection = self.db[collection_name]
-        # Create the projection dictionary with the required key
-        projection = {key1: 1, "_id": 0}
-        # Add any additional keys to the projection
-        for key in additional_keys:
-            projection[key] = 1
-        # Fetch the documents with the specified keys
-        keys = collection.find({}, projection)
-        return list(keys)
          
 
-    
+class SignpostingDatabase(Database):
+    def get_items(self):
+        pass

@@ -5,13 +5,13 @@ import pandas as pd
 import time
 from selenium.common.exceptions import TimeoutException
 
-def make_category_csv(url, region):
+def make_category_csv(url, region, use_local_classifier=False):
     dataframes = []
     scraper = Scraper()
     
     html, content_title = scraper.scrape(url)
     if region.lower() == "camden":
-        camden_reader = CamdenContentReader(html)
+        camden_reader = CamdenContentReader(html, use_local_classifier)
         last_page = camden_reader.get_last_page()
 
         first_page_df = camden_reader.create_df()
@@ -26,7 +26,7 @@ def make_category_csv(url, region):
                     try:
                         print(f"Scraping URL: {new_url}")
                         html = scraper.scrape(new_url)[0]
-                        df = CamdenContentReader(html).create_df()
+                        df = CamdenContentReader(html, use_local_classifier).create_df()
                         dataframes.append(df)
                         success = True
                     except TimeoutException as e:
@@ -42,7 +42,7 @@ def make_category_csv(url, region):
                         print(f"Unexpected exception: {e}")
                         break
     elif region.lower() == "islington":
-        islington_reader = IslingtonContentReader(html)
+        islington_reader = IslingtonContentReader(html, use_local_classifier)
         last_page = islington_reader.get_last_page()
         print(last_page)
         first_page_df = islington_reader.create_df()
@@ -57,7 +57,7 @@ def make_category_csv(url, region):
                     try:
                         print(f"Scraping URL: {new_url}")
                         html = scraper.scrape(new_url)[0]
-                        df = IslingtonContentReader(html).create_df()
+                        df = IslingtonContentReader(html, use_local_classifier).create_df()
                         print("df made")
                         dataframes.append(df)
                         success = True

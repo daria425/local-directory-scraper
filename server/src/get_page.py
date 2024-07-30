@@ -1,5 +1,5 @@
 
-from dependencies.database import Database
+from dependencies.database import LocalDirectoryDatabase
 from dependencies.categories import Categories
 
 from dotenv import load_dotenv
@@ -8,10 +8,10 @@ import json
 load_dotenv()
 subcategory_file="data/json/subcategories.json"
 sub_subcategory_file="data/json/sub_subcategories.json"
-mongo_db_uri=os.environ.get("MONGODB_URI")
+mongo_db_uri=os.environ.get("LOCAL_DIRECTORY_DB_URI")
 
 regions=["camden", "islington"]
-db=Database(mongo_db_uri, "directory-contents")
+db=LocalDirectoryDatabase(mongo_db_uri, "directory-contents")
 main_category_urls=db.get_key_values("main_categories", "category_link", "region")
 sub_category_urls=db.get_key_values("subcategories", "subcategory_link", "region")
 test_link={'category_link': 'https://findyour.islington.gov.uk/kb5/islington/directory/health.page?healthchannelnew=0', 'region': 'islington'}

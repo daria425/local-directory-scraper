@@ -1,15 +1,16 @@
 from abc import ABC, abstractmethod
 import re
 from urllib.parse import urlparse, parse_qs
-from .autotagging import classify
+from .autotagging import classify_tags
 import pandas as pd
 from bs4 import BeautifulSoup
 
 
 file_path="./data.json"
 class ContentReaderBase(ABC):
-    def __init__(self, html_content):
+    def __init__(self, html_content, use_local_classifier):
         self.html_content = html_content
+        self.use_local_classifier=use_local_classifier
         self.soup_object = BeautifulSoup(self.html_content, "html.parser")
         self.tag_list = [
     "benefits-advice",
@@ -101,10 +102,10 @@ class ContentReaderBase(ABC):
         pass
 
     def create_tag_str(self, text):
-        top_tags=classify(self.tag_list, text)
+        top_tags=classify_tags(self.tag_list, text, self.use_local_classifier)
         tag_strings=[item[0] for item in top_tags]
         tags=" ".join(tag_strings)
-        return tag_strings
+        return tags
 
     def create_df(self):
         results = self.extract_info()
@@ -114,8 +115,8 @@ class ContentReaderBase(ABC):
         return df
 
 class CamdenContentReader(ContentReaderBase):
-    def __init__(self, html_content):
-        super().__init__(html_content)
+    def __init__(self, html_content, use_local_classifier):
+        super().__init__(html_content, use_local_classifier)
         self.prefix="https://cindex.camden.gov.uk/kb5/camden/cd/"
 
     def get_last_page(self):
@@ -216,8 +217,8 @@ class CamdenContentReader(ContentReaderBase):
         return subcategories
     
 class IslingtonContentReader(ContentReaderBase):
-    def __init__(self, html_content):
-        super().__init__(html_content)
+    def __init__(self, html_content, use_local_classifier):
+        super().__init__(html_content, use_local_classifier)
         self.prefix="https://findyour.islington.gov.uk/kb5/islington/directory/"
 
     def get_last_page(self):
