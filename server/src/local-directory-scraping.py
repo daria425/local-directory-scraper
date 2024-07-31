@@ -4,6 +4,7 @@ from dependencies.make_csv import make_category_csv
 import os
 from dotenv import load_dotenv
 load_dotenv()
+os.environ['ENV'] = 'development'
 mongo_db_uri=os.getenv("LOCAL_DIRECTORY_DB_URI")
 directory_db=LocalDirectoryDatabase(mongo_db_uri, "directory-contents")
 

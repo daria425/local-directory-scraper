@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import re
 from urllib.parse import urlparse, parse_qs
 from .autotagging import classify_tags, classify_location
+import json
 import pandas as pd
 from bs4 import BeautifulSoup
 
@@ -101,12 +102,15 @@ class ContentReaderBase(ABC):
     def extract_info(self):
         pass
 
-    def create_tag_str(self, text):
-        top_tags, total_scores=classify_tags(self.tag_list, text, self.use_local_classifier)
-        tag_strings=[f"#{item[0]}" for item in top_tags]
+    def create_columns(self, text):
+        top_tags=classify_tags(self.tag_list, text, self.use_local_classifier)
+        tag_strings=[f"#{item[0]}" for item in top_tags if item[1]>0.65]
+        above_65=[item for item in top_tags if item[1]>0.65]
+        below_65=[item for item in top_tags if item[1]<=0.65]
+        above_65_col=json.dumps(above_65)
+        below_65_col=json.dumps(below_65)
         tags=" ".join(tag_strings)
-        return tags, total_scores
-
+        return tags,  above_65_col, below_65_col
     def create_df(self):
         results = self.extract_info()
         df = pd.DataFrame.from_dict(results)
@@ -168,8 +172,9 @@ class CamdenContentReader(ContentReaderBase):
                     org_email = org_email.replace("mailto:", "")
                 elif link.find("i", class_="fa fa-external-link"):
                     org_website = link["href"]
-            tags, total_scores=self.create_tag_str(org_description_text)
-            location=classify_location(org_description_text, self.use_local_classifier)
+            text=f"{org_name}, {org_description_text}"
+            tags, above_65_col, below_65_col=self.create_columns(text)
+            location=classify_location(text, self.use_local_classifier)
             result = {
                 "id": org_id,
                 "Name": org_name,
@@ -181,7 +186,8 @@ class CamdenContentReader(ContentReaderBase):
                 "Local / National": location, 
                 "location": location if location == "National" else "Camden", 
                 "Email": org_email, 
-                "Scores": total_scores
+                "Above 0.65": above_65_col, 
+                "Below 0.65": below_65_col
             }
            #get the tags with the description here
             results.append(result)
@@ -262,8 +268,9 @@ class IslingtonContentReader(ContentReaderBase):
                 elif btn.find("span", class_="fas fa-phone"):
                     org_phone=btn['href']
                     org_phone=org_phone.replace("tel:", "")
-            tags=self.create_tag_str(org_description)
-            location=classify_location(org_description, self.use_local_classifier)
+            text=f"{org_name}, {org_description}"
+            tags, above_65_col, below_65_col=self.create_columns(text)
+            location=classify_location(text, self.use_local_classifier)
             result={
                 "id": org_id,
                 "Name": org_name,
@@ -274,7 +281,10 @@ class IslingtonContentReader(ContentReaderBase):
                 "Phone - call":org_phone,
                 "Local / National": location, 
                 "location": location if location == "National" else "Islington", 
-                "Email": org_email
+                "Email": org_email, 
+                "Above 0.65": above_65_col, 
+                "Below 0.65": below_65_col
+
             }
             results.append(result)
         return results

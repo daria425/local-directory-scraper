@@ -41,8 +41,7 @@ def classify_tags(tag_list,text, use_local_classifier, chunk_size=10, num_tags=5
     # with open("./scores.json", 'a') as json_file:
     #     json.dump(sorted_list, json_file)
     #     json_file.write('\n')
-    total_scores=json.dumps(sorted_list)
-    return sorted_list[:num_tags], total_scores
+    return sorted_list[:num_tags]
     
 def classify_location(text,use_local_classifier):
      response=''

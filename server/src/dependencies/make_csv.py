@@ -4,16 +4,19 @@ from .scraper import Scraper
 import pandas as pd
 import time
 from selenium.common.exceptions import TimeoutException
+import os
 
 def make_category_csv(url, region, use_local_classifier=False):
     dataframes = []
     scraper = Scraper()
     
     html, content_title = scraper.scrape(url)
+    env = os.getenv('ENV', 'production')
     if region.lower() == "camden":
         camden_reader = CamdenContentReader(html, use_local_classifier)
         last_page = camden_reader.get_last_page()
-
+        if env == 'development':
+            last_page = min(int(last_page), 40) if last_page is not None else 40
         first_page_df = camden_reader.create_df()
         dataframes.append(first_page_df)
         if last_page is not None:
@@ -44,7 +47,8 @@ def make_category_csv(url, region, use_local_classifier=False):
     elif region.lower() == "islington":
         islington_reader = IslingtonContentReader(html, use_local_classifier)
         last_page = islington_reader.get_last_page()
-        print(last_page)
+        if env == 'development':
+            last_page = min(int(last_page), 40) if last_page is not None else 40
         first_page_df = islington_reader.create_df()
         dataframes.append(first_page_df)
         if last_page is not None:
